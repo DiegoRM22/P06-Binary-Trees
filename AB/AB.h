@@ -13,6 +13,9 @@ class AB {
   virtual bool Insert(const Key& data) = 0;
   virtual bool Search(const Key& data) = 0;
 
+	void InOrder(NodeB<Key>* current) const;
+  
+
   NodeB<Key>* GetRoot() const { return root_; }
 
  protected:
@@ -24,41 +27,52 @@ class AB {
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const AB<T>& ab) {
-    if (ab.GetRoot() == nullptr) {
-        os << "[.]";
-        return os;
-    }
+	if (ab.GetRoot() == nullptr) {
+		os << "[.]";
+		return os;
+	}
 
-    std::queue<NodeB<T>*> q;
-    q.push(ab.GetRoot());
+	std::queue<NodeB<T>*> q;
+	q.push(ab.GetRoot());
 
-    while (!q.empty()) {
-        size_t level_nodes = q.size();
+	while (!q.empty()) {
+			size_t level_nodes = q.size();
 
-        while (level_nodes > 0) {
-            NodeB<T>* current = q.front();
-            q.pop();
-            if (current != nullptr) {
-                os << "[" << current->GetData() << "] ";
-                if (current->GetLeft() != nullptr) {
-                    q.push(current->GetLeft());
-                } else {
-                    q.push(nullptr);
-                }
-                if (current->GetRight() != nullptr) {
-                    q.push(current->GetRight());
-                } else {
-                    q.push(nullptr);
-                }
-            } else {
-                os << "[.] ";
-            }
-            level_nodes--;
-        }
-        os << std::endl;
-    }
+			while (level_nodes > 0) {
+				NodeB<T>* current = q.front();
+				q.pop();
+				if (current != nullptr) {
+					os << "[" << current->GetData() << "] ";
+					if (current->GetLeft() != nullptr) {
+						q.push(current->GetLeft());
+					} else {
+						q.push(nullptr);
+					}
+					if (current->GetRight() != nullptr) {
+						q.push(current->GetRight());
+					} else {
+						q.push(nullptr);
+					}
+				} else {
+					os << "[.] ";
+				}
+				level_nodes--;
+			}
+		os << std::endl;
+	}
 
-    return os;
+	return os;
+}
+
+template<class Key>
+void AB<Key>::InOrder(NodeB<Key>* current) const {
+	if (current == nullptr) {
+		return;
+	}
+
+	InOrder(current->GetLeft());
+	std::cout << current->GetData() << " ";
+	InOrder(current->GetRight());
 }
 
 

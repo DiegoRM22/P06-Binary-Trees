@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <chrono>
 
 #include "AB/AB.h"
 #include "AB/ABE/ABE.h"
@@ -112,9 +113,25 @@ void ReadNIFsFromFile(const std::string& filename, AB<NIF>& ab) {
   }
 }
 
+template <class Key>
+std::vector<Key> GeneratesRandomKeys(int num_elements) {
+  std::vector<Key> keys;
+  for (int i = 0; i < num_elements; ++i) {
+    std::string nif_number = std::to_string(rand() % 10000000);
+    char letter = 'A' + rand() % 26; // Genera una letra aleatoria entre A y Z
+    nif_number.push_back(letter); // Añade la letra al final del número de NIF
+
+    Key n(nif_number);
+    keys.push_back(n);
+  }
+  return keys;
+}
+
 
 
 int main(int argc, char* argv[]) {
+  //Initializes the random seed
+  srand(time(NULL));
   std::string tree_type;
   std::string init_type;
   int num_elements = 0;
@@ -123,10 +140,7 @@ int main(int argc, char* argv[]) {
   parseCommandLine(argc, argv, tree_type, init_type, num_elements, file_name);
 
   // Hacer algo con las opciones extraídas
-  std::cout << "Tipo de árbol: " << tree_type << std::endl;
-  std::cout << "Tipo de inicialización: " << init_type << std::endl;
   std::cout << "Número de elementos: " << num_elements << std::endl;
-  std::cout << "Nombre del archivo: " << file_name << std::endl;
 
   if (tree_type == "abe") {
     ABE<NIF> abe;
@@ -134,10 +148,36 @@ int main(int argc, char* argv[]) {
       InitializesManual(abe);
     } else if (init_type == "random") {
       InitializesRandom(abe, num_elements);
+      // Generamos 10 NIF aleatorios
+      std::vector<NIF> keys = GeneratesRandomKeys<NIF>(10);
+      // Calcular el tiempo que tarda en buscar los 10 NIF
+      std::cout << "ABE tree:" << std::endl;
+      for (const NIF& key : keys) {
+        auto start_time = std::chrono::steady_clock::now();
+        abe.Search(key);
+        auto end_time = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+        std::cout << "Tiempo de búsqueda del NIF " << key << ": " << elapsed_seconds.count() << " segundos." << std::endl;
+      }
+      std::cout << "--------------------------------------------------\n";
+      std::cout << "ABB tree:" << std::endl;
+      // Now with the ABB tree
+      ABB<NIF> abb;
+      InitializesRandom(abb, num_elements);
+      // Calcular el tiempo que tarda en buscar los 10 NIF
+      for (const NIF& key : keys) {
+        auto start_time = std::chrono::steady_clock::now();
+        abb.Search(key);
+        auto end_time = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+        std::cout << "Tiempo de búsqueda del NIF " << key << ": " << elapsed_seconds.count() << " segundos." << std::endl;
+      }
+
+
     } else if (init_type == "file") {
       ReadNIFsFromFile(file_name, abe);
     }
-    std::cout << abe << std::endl;
+    // std::cout << abe << std::endl;
 
   } else {
     ABB<NIF> abb;
@@ -148,7 +188,7 @@ int main(int argc, char* argv[]) {
     } else if (init_type == "file") {
       ReadNIFsFromFile(file_name, abb);
     }
-    std::cout << abb << std::endl;
+    // std::cout << abb << std::endl;
   }
 
   return 0;
