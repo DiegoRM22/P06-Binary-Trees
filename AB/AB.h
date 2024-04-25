@@ -19,25 +19,47 @@ class AB {
   NodeB<Key>* root_;
 };
 
-std::ostream& operator<<(std::ostream& os, const AB<int>& ab) {
-  // Imprimir por niveles
-  NodeB<int>* current = ab.GetRoot();
-  os << "[" << current->GetData() << "] ";
-  while (current != nullptr) {
-    os << std::endl;
-    if (current->GetLeft() != nullptr) {
-      os << "[" << current->GetLeft()->GetData() << "] ";
-    } else {
-      os << "[.]" << " ";
+#include <iostream>
+#include <queue>
+
+template <typename T>
+std::ostream& operator<<(std::ostream& os, const AB<T>& ab) {
+    if (ab.GetRoot() == nullptr) {
+        os << "[.]";
+        return os;
     }
-    if (current->GetRight() != nullptr) {
-      os << "[" << current->GetRight()->GetData() << "] ";
-    } else {
-      os << "[.]" << " ";
+
+    std::queue<NodeB<T>*> q;
+    q.push(ab.GetRoot());
+
+    while (!q.empty()) {
+        size_t level_nodes = q.size();
+
+        while (level_nodes > 0) {
+            NodeB<T>* current = q.front();
+            q.pop();
+            if (current != nullptr) {
+                os << "[" << current->GetData() << "] ";
+                if (current->GetLeft() != nullptr) {
+                    q.push(current->GetLeft());
+                } else {
+                    q.push(nullptr);
+                }
+                if (current->GetRight() != nullptr) {
+                    q.push(current->GetRight());
+                } else {
+                    q.push(nullptr);
+                }
+            } else {
+                os << "[.] ";
+            }
+            level_nodes--;
+        }
+        os << std::endl;
     }
-    current = current->GetLeft();
-  }
-  return os;
+
+    return os;
 }
+
 
 #endif

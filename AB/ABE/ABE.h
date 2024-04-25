@@ -19,30 +19,35 @@ class ABE : public AB<Key> {
 */
 template<class Key>
 bool ABE<Key>::Insert(const Key& data) {
+  std::cout << "Inserting: " << data << std::endl;
   if (this->root_ == nullptr) {
+    std::cout << "Inserting root" << std::endl;
     this->root_ = new NodeB<Key>(data);
     return true;
   }
-  NodeB<Key>* current = this->root_;
-  while (true) {
-    if (current->GetLeft()->GetData() == NULL ) {
+  std::queue<NodeB<Key>*> q;
+  q.push(this->root_);
+  while (!q.empty()) {
+    NodeB<Key>* current = q.front();
+    q.pop();
+    if (current->GetLeft() == nullptr) {
       std::cout << "Inserting left" << std::endl;
-      std::cout << "Izquierda: " << current->GetLeft()<< std::endl;
       current->SetLeft(new NodeB<Key>(data));
       return true;
-    } else if (current->GetRight() == nullptr) {
+    } else {
+      q.push(current->GetLeft());
+    }
+    if (current->GetRight() == nullptr) {
+      std::cout << "Inserting right" << std::endl;
       current->SetRight(new NodeB<Key>(data));
       return true;
-    } 
-    // Check if the data is already in the tree
-    if (current->GetData() == data || current->GetLeft()->GetData() == data || current->GetRight()->GetData() == data) {
-      std::cout << "Data already in the tree" << std::endl;
-      return false;
     } else {
-      current = current->GetLeft();
+      q.push(current->GetRight());
     }
   }
+  return false; // Esto debería ser inalcanzable si el árbol está correctamente estructurado
 }
+
 
 /**
  * @brief Search a node in the tree.
@@ -52,24 +57,23 @@ bool ABE<Key>::Search(const Key& data) {
   if (this->root_ == nullptr) {
     return false;
   }
-  NodeB<Key>* current = this->root_;
-  while (current != nullptr) {
+  std::queue<NodeB<Key>*> q;
+  q.push(this->root_);
+  while (!q.empty()) {
+    NodeB<Key>* current = q.front();
+    q.pop();
     if (current->GetData() == data) {
       return true;
     }
     if (current->GetLeft() != nullptr) {
-      if (current->GetLeft()->GetData() == data) {
-        return true;
-      }
+      q.push(current->GetLeft());
     }
     if (current->GetRight() != nullptr) {
-      if (current->GetRight()->GetData() == data) {
-        return true;
-      }
+      q.push(current->GetRight());
     }
-    current = current->GetLeft();
   }
   return false;
 }
+
 
 #endif
