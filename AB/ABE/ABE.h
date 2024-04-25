@@ -19,9 +19,7 @@ class ABE : public AB<Key> {
 */
 template<class Key>
 bool ABE<Key>::Insert(const Key& data) {
-  std::cout << "Inserting: " << data << std::endl;
   if (this->root_ == nullptr) {
-    std::cout << "Inserting root" << std::endl;
     this->root_ = new NodeB<Key>(data);
     return true;
   }
@@ -31,14 +29,12 @@ bool ABE<Key>::Insert(const Key& data) {
     NodeB<Key>* current = q.front();
     q.pop();
     if (current->GetLeft() == nullptr) {
-      std::cout << "Inserting left" << std::endl;
       current->SetLeft(new NodeB<Key>(data));
       return true;
     } else {
       q.push(current->GetLeft());
     }
     if (current->GetRight() == nullptr) {
-      std::cout << "Inserting right" << std::endl;
       current->SetRight(new NodeB<Key>(data));
       return true;
     } else {
