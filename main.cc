@@ -131,14 +131,15 @@ void ReadNIFsFromFile(const std::string& filename, AB<NIF>& ab) {
 
 
 
-int main(int argc, char* argv[]) {
+int main() {
+  std::cout << "Introduce el número de elementos: ";
+
   std::string tree_type;
   std::string init_type;
   int num_elements = 0;
   std::string file_name;
 
   ABB<RPGCharacter> abb;
-
   InitializesRandomCharacters(abb, 10);
 
   std::cout << abb << std::endl;
