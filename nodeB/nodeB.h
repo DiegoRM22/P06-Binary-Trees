@@ -14,15 +14,17 @@ class NodeB {
   void SetLeft(NodeB<Key>* left) { left_ = left; }
   void SetRight(NodeB<Key>* right) { right_ = right; }
 
+  virtual ~NodeB() {}
 
 
-  Key GetData() const { return data_; }
+  Key GetData() const { return NodeB<Key>::GetData(); }
 
  protected:
   Key data_;
   NodeB<Key>* left_;
   NodeB<Key>* right_;
 };
+
 
 template<class Key>
 std::ostream& operator<<(std::ostream& os, const NodeB<Key>& node) {

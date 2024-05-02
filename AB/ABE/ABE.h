@@ -12,6 +12,7 @@ class ABE : public AB<Key> {
   ABE(const Key& data) : AB<Key>(data) {}
   bool Insert(const Key& data) override;
   bool Search(const Key& data) override;
+  NodeB<Key>* GetRoot() const { return this->GetRoot(); }
 };
 
 /**
