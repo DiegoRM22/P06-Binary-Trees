@@ -1,13 +1,12 @@
 #include <iostream>
 #include <string>
-#include <chrono>
 
 #include "AB/AB.h"
 #include "AB/ABE/ABE.h"
 #include "AB/ABB/ABB.h"
-#include "AVL/AVL.h"
 #include "nodeB/nodeB.h"
 #include "NIF/NIF.h"
+#include "RPG-character/RPG-character.h"
 
 void parseCommandLine(int argc, char* argv[], std::string& tree_type, std::string& init_type, int& num_elements, std::string& file_name) {
   if (argc < 5) {
@@ -91,6 +90,22 @@ void InitializesRandom(AB<NIF>& ab, int num_elements) {
   }
 }
 
+void InitializesRandomCharacters(AB<RPGCharacter>& ab, int num_elements) {
+  for (int i = 0; i < num_elements; ++i) {
+    int strength = rand() % 100;
+    int mind = rand() % 100;
+    int stamina = rand() % 100;
+    int skill = rand() % 100;
+    int intelligence = rand() % 100;
+    int faith = rand() % 100;
+    int arcane = rand() % 100;
+
+    RPGCharacter rpg(strength, mind, stamina, skill, intelligence, faith, arcane);
+
+    ab.Insert(rpg);
+  }
+}
+
 #include <fstream>
 #include <sstream>
 
@@ -114,47 +129,51 @@ void ReadNIFsFromFile(const std::string& filename, AB<NIF>& ab) {
   }
 }
 
-template <class Key>
-std::vector<Key> GeneratesRandomKeys(int num_elements) {
-  std::vector<Key> keys;
-  for (int i = 0; i < num_elements; ++i) {
-    std::string nif_number = std::to_string(rand() % 10000000);
-    char letter = 'A' + rand() % 26; // Genera una letra aleatoria entre A y Z
-    nif_number.push_back(letter); // Añade la letra al final del número de NIF
-
-    Key n(nif_number);
-    keys.push_back(n);
-  }
-  return keys;
-}
-
 
 
 int main(int argc, char* argv[]) {
-  //Initializes the random seed
-  srand(time(NULL));
   std::string tree_type;
   std::string init_type;
   int num_elements = 0;
   std::string file_name;
 
-  parseCommandLine(argc, argv, tree_type, init_type, num_elements, file_name);
+  ABB<RPGCharacter> abb;
 
-  // Hacer algo con las opciones extraídas
-  std::cout << "Número de elementos: " << num_elements << std::endl;
+  InitializesRandomCharacters(abb, 10);
 
-  // AVL
-  AVL<NIF> avl;
-  if (init_type == "manual") {
-    InitializesManual(avl);
-  } else if (init_type == "random") {
-    InitializesRandom(avl, num_elements);
-  } else if (init_type == "file") {
-    ReadNIFsFromFile(file_name, avl);
-  }
+  std::cout << abb << std::endl;
 
-  std::cout << "Árbol AVL: " << std::endl;
-  std::cout << avl << std::endl;
+
+  // parseCommandLine(argc, argv, tree_type, init_type, num_elements, file_name);
+
+  // // Hacer algo con las opciones extraídas
+  // std::cout << "Tipo de árbol: " << tree_type << std::endl;
+  // std::cout << "Tipo de inicialización: " << init_type << std::endl;
+  // std::cout << "Número de elementos: " << num_elements << std::endl;
+  // std::cout << "Nombre del archivo: " << file_name << std::endl;
+
+  // if (tree_type == "abe") {
+  //   ABE<NIF> abe;
+  //   if (init_type == "manual") {
+  //     InitializesManual(abe);
+  //   } else if (init_type == "random") {
+  //     InitializesRandom(abe, num_elements);
+  //   } else if (init_type == "file") {
+  //     ReadNIFsFromFile(file_name, abe);
+  //   }
+  //   std::cout << abe << std::endl;
+
+  // } else {
+  //   ABB<NIF> abb;
+  //   if (init_type == "manual") {
+  //     InitializesManual(abb);
+  //   } else if (init_type == "random") {
+  //     InitializesRandom(abb, num_elements);
+  //   } else if (init_type == "file") {
+  //     ReadNIFsFromFile(file_name, abb);
+  //   }
+  //   std::cout << abb << std::endl;
+  // }
 
   return 0;
 }
